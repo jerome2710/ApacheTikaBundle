@@ -18,13 +18,21 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+    private const NAMESPACE = 'apache_tika';
+
     /**
      * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('apache_tika');
+        $treeBuilder = new TreeBuilder(self::NAMESPACE);
+
+        if (method_exists($treeBuilder, 'getRootNode')) {
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            // BC layer for symfony/config 4.1 and older
+            $rootNode = $treeBuilder->root(self::NAMESPACE);
+        }
 
         $rootNode
             ->children()
